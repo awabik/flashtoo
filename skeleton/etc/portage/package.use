@@ -1,0 +1,6 @@
+# No need for python 3.9, reduce disk usage
+*/* PYTHON_TARGETS: python3_8 -python3_9
+*/* PYTHON_SINGLE_TARGET: python3_8 -python3_9
+
+# no initramfs:
+sys-kernel/gentoo-kernel -initramfs

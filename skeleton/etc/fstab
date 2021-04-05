@@ -1,0 +1,6 @@
+# FLASHTOO_REM Commented out initially: existing /boot entry prevents gentoo-kernel to merge
+# FLASHTOO_REM if /boot is not mounted. The flash installation script needs to update
+# FLASHTOO_REM PARTUUIDS here anyway, and so it will also uncomment the entries and
+# FLASHTOO_REM remove this comment.
+#PARTUUID=__FLASHTOO_F2FS_PARTUUID /     f2fs  auto,relatime,compress_algorithm=zstd,discard   0 2
+#PARTUUID=__FLASHTOO_FAT_PARTUUID  /boot ext4  auto,relatime,discard                           0 1
