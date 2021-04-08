@@ -1,17 +1,38 @@
 #!/bin/bash
 
 ADDITIONAL_PACKAGES="\
-sys-power/bbswitch \
 x11-drivers/nvidia-drivers \
-x11-misc/bumblebee \
 gnome-base/gnome \
+sys-apps/pciutils \
+sys-apps/usbutils \
+sys-fs/btrfs-progs \
+sys-fs/e2fsprogs \
+sys-fs/ntfs3g \
+sys-fs/ext4magic \
+sys-fs/exfatprogs \
+sys-process/htop \
+sys-power/powertop \
+sys-process/iotop \
+sys-fs/ddrescue \
+sys-apps/dcfldd \
+app-misc/binwalk \
+app-forensics/sleuthkit \
+net-analyzer/nmap \
+app-crypt/md5deep \
+app-forensics/foremost \
+app-forensics/scalpel \
+sys-fs/cryptsetup \
+sys-fs/lvm2 \
+app-arch/unrar \
+app-editors/vim \
+media-gfx/gimp \
+media-gfx/inkscape \
+media-video/celluloid \
+www-client/firefox \
+app-office/libreoffice \
 "
 
-#remove when done testing
-#ADDITIONAL_PACKAGES=""
-
-#TARGET_PROFILE="default/linux/amd64/17.1/desktop/gnome/systemd"
-TARGET_PROFILE="default/linux/amd64/17.1/systemd"
+TARGET_PROFILE="default/linux/amd64/17.1/desktop/gnome/systemd"
 
 # Change to =sys-kernel/gentoo-kernel-X.Y.Z for specific version
 GENTOO_SOURCES_VER="sys-kernel/gentoo-kernel"
@@ -38,7 +59,6 @@ function post_install_setup_actions_custom_services() {
         sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm/custom.conf
 
         systemctl enable NetworkManager
-        systemctl enable bumblebeed
 }
 
 function post_install_setup_actions_systemd() {

@@ -14,7 +14,8 @@ sys-fs/dosfstools \
 sys-kernel/linux-firmware \
 "
 
-# gentoo-kernel requires cpio, and does not have it set in its bdeps:
+# https://bugs.gentoo.org/731666
+# https://bugs.gentoo.org/701678
 MANDATORY_KERNEL_BDEPS="\
 app-arch/cpio \
 "
@@ -26,11 +27,24 @@ function sync_portage() {
 	emerge -1 portage
 }
 
-# The stage1 tree is built from binary packages with --root option
+# The stage0 tree is built from external system with --root option
 # for emerge. This causes a number of bdeps not installed, like perl.
-# Need to build these deps before installing kernel
-function build_system_bdeps() {
+# Need to build these deps before installing kernel.
+# Also, stage0 may have been built with different profile. Switching profile
+# may cause all sort of conflicts if world is not rebuilt emptytree,
+# like if switching from minimal gentoo profile to systemd-desktop,
+# fails with emerging static-dev which conflicts with other stuff
+function build_stage1_nokernel() {
+	emerge --emptytree @world ${MANDATORY_KERNEL_BDEPS}
+	etc-update --automode -3
+	emerge --depclean
+}
+
+# Do this if profile is same?
+function build_stage1_nokernel_sameprofile() {
 	emerge --with-bdeps=y --deep --noreplace @world ${MANDATORY_KERNEL_BDEPS}
+	# Emerge-update?
+	emerge --depclean
 }
 
 function build_kernel() {
@@ -65,9 +79,8 @@ function purge_news_and_stuff() {
 }
 
 sync_portage
-build_system_bdeps
+build_stage1_nokernel
 build_kernel
-rebuild_world_for_stage2
 clean_kernel
 
 # FIXME: what if the stage2 installed new gcc/binutils? depclean should

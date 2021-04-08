@@ -4,3 +4,8 @@
 
 # no initramfs:
 sys-kernel/gentoo-kernel -initramfs
+
+# Use changes required for building default apps
+media-libs/libvpx postproc
+x11-base/xorg-server xvfb
+media-video/mpv libmpv

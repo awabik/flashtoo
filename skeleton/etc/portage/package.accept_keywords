@@ -1,4 +1,13 @@
+# Kernel 5.10 is LTS
+# gentoo-sources 5.10.x is already stable amd64
+# gentoo-kernel 5.10.x still ~amd64
+# kernel 5.11 - issues vs systemd rfkill- not patched in Gentoo, see https://github.com/systemd/systemd/pull/18679
+# Bottom line is: Flashtoo will use latest 5.10.
+
 <sys-kernel/linux-headers-5.11 ~amd64
 <sys-kernel/gentoo-sources-5.11 ~amd64
 <sys-kernel/gentoo-kernel-5.11 ~amd64
 <virtual/dist-kernel-5.11 ~amd64
+
+# Scalpel is only ~amd64
+app-forensics/scalpel ~amd64
