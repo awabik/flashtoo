@@ -35,20 +35,20 @@ function sync_portage() {
 # like if switching from minimal gentoo profile to systemd-desktop,
 # fails with emerging static-dev which conflicts with other stuff
 function build_stage1_nokernel() {
-	emerge --emptytree @world ${MANDATORY_KERNEL_BDEPS}
+	FEATURES="-buildpkg" emerge --emptytree @world ${MANDATORY_KERNEL_BDEPS}
 	etc-update --automode -3
 	emerge --depclean
 }
 
 # Do this if profile is same?
-function build_stage1_nokernel_sameprofile() {
-	emerge --with-bdeps=y --deep --noreplace @world ${MANDATORY_KERNEL_BDEPS}
-	# Emerge-update?
-	emerge --depclean
-}
+#function build_stage1_nokernel_sameprofile() {
+#	FEATURES="-buildpkg"  emerge --with-bdeps=y --deep --noreplace @world ${MANDATORY_KERNEL_BDEPS}
+#	# Emerge-update?
+#	emerge --depclean
+#}
 
 function build_kernel() {
-	emerge ${GENTOO_SOURCES_VER}
+	FEATURES="-buildpkg" emerge ${GENTOO_SOURCES_VER}
 	eselect kernel set 1
 }
 
@@ -60,17 +60,9 @@ function clean_kernel() {
 }
 
 function rebuild_world_for_stage2() {
-	emerge --emptytree --exclude ${GENTOO_SOURCES_VER} @world
-	emerge @preserved-rebuild
-	emerge --depclean
-}
-
-function rebuild_world_for_stage3() {
 	emerge --emptytree @world ${MANDATORY_ADDITIONAL_PACKAGES} ${ADDITIONAL_PACKAGES}
 	emerge @preserved-rebuild
 	emerge --depclean
-
-	rm -f /boot/*.old
 }
 
 function purge_news_and_stuff() {
@@ -83,9 +75,9 @@ build_stage1_nokernel
 build_kernel
 clean_kernel
 
-# FIXME: what if the stage2 installed new gcc/binutils? depclean should
+# FIXME: what if the stage1 installed new gcc/binutils? depclean should
 # have removed old ones, but can we count on this?
-rebuild_world_for_stage3
+rebuild_world_for_stage2
 purge_news_and_stuff
 
 post_install_setup_actions
