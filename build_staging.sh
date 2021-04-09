@@ -44,7 +44,7 @@ function setup_staging() {
 
 function build_staging() {
 	mkdir -p /flashtoo/portage/tmp
-	emerge --usepkg --with-bdeps=y --with-bdeps-auto=n --root="${STAGING_ROOT}" @system
+	emerge --usepkg --root="${STAGING_ROOT}" @system
 }
 
 function chroot_rebuild_staging() {
