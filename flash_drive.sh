@@ -45,7 +45,7 @@ function format_partitions() {
 	echo "Format partitions ${DISK}"
 
 	echo "Create EXT4 filesystem in ${FAT_BOOT_PART}"
-	mkfs.ext4 -L FLASHTOO "${FAT_BOOT_PART}"
+	mkfs.ext4 -F -L FLASHTOO "${FAT_BOOT_PART}"
 
 	echo "Create F2FS filesystem in ${F2FS_ROOT_PART}"
 	mkfs.f2fs -f -l FLASHTOO-ROOT \
