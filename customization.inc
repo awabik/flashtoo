@@ -5,6 +5,7 @@ x11-drivers/nvidia-drivers \
 gnome-base/gnome \
 sys-apps/pciutils \
 sys-apps/usbutils \
+sys-apps/lm-sensors \
 sys-fs/btrfs-progs \
 sys-fs/e2fsprogs \
 sys-fs/ntfs3g \
