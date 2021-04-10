@@ -36,6 +36,7 @@ function setup_staging() {
 	mkdir -p "${STAGING_ROOT}"/flashtoo/portage/tmp
 
 	cp -av "${SKELETON}"/* "${STAGING_ROOT}"
+	chown -hR root:root "${STAGING_ROOT}"
 	cp "${SCRIPT_ROOT}"/rebuild_staging.sh "${STAGING_ROOT}"/flashtoo
 	cp "${SCRIPT_ROOT}"/customization.inc "${STAGING_ROOT}"/flashtoo
 	echo ${UNTOUCHED_TAG} > "${STAGING_ROOT}"/etc/resolv.conf

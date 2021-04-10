@@ -24,7 +24,7 @@ function sync_portage() {
 	emerge-webrsync
 	emerge --sync
 	eselect profile set "${TARGET_PROFILE}"
-	emerge -1 portage
+	FEATURES="-buildpkg" emerge -1 portage
 }
 
 # The stage0 tree is built from external system with --root option
