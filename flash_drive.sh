@@ -2,6 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+PREPARTITIONED=0
+
 function part_disk() {
 # Create new MBR partition table
 # Create partition 1, 128MB
@@ -41,12 +43,12 @@ function discover_drive_partitions() {
         F2FS_PARTUUID=$(blkid -s PARTUUID -o value ${F2FS_ROOT_PART})
 }
 
-function format_partitions() {
-	echo "Format partitions ${DISK}"
-
+function format_boot() {
 	echo "Create EXT4 filesystem in ${FAT_BOOT_PART}"
 	mkfs.ext4 -F -L FLASHTOO "${FAT_BOOT_PART}"
+}
 
+function format_root() {
 	echo "Create F2FS filesystem in ${F2FS_ROOT_PART}"
 	mkfs.f2fs -f -l FLASHTOO-ROOT \
             -O extra_attr,encrypt,lost_found,inode_checksum,quota,inode_crtime,sb_checksum,compression \
@@ -75,23 +77,23 @@ function chroot_flashdrive() {
 	rm -rf "${SYSLINUX_SETUP_DIR}"
 }
 
-function mount_f2fs_part() {
+function mount_root_part() {
         mkdir "${F2FS_ROOT}"
         mount -o compress_algorithm=lzo ${F2FS_ROOT_PART} "${F2FS_ROOT}"
 }
 
-function umount_f2fs_part() {
+function umount_root_part() {
 	umount "${F2FS_ROOT}"
 	rmdir "${F2FS_ROOT}"
 }
 
-function mount_f2fs_devprocsys() {
+function mount_root_devprocsys() {
 	mount -o bind /dev "${F2FS_ROOT}"/dev
         mount -o bind /proc "${F2FS_ROOT}"/proc
         mount -o bind /sys "${F2FS_ROOT}"/sys
 }
 
-function umount_f2fs_devprocsys() {
+function umount_root_devprocsys() {
 	umount "${F2FS_ROOT}"/sys
 	umount "${F2FS_ROOT}"/proc
 	umount "${F2FS_ROOT}"/dev
@@ -100,13 +102,22 @@ function umount_f2fs_devprocsys() {
 function setup_root_part() {
 	F2FS_ROOT_TARBALL="${STAGING_TARBALL_DIR}/${STAGING_ROOT_TARBALL}"
 
-	chattr -R +c "${F2FS_ROOT}"
-	pushd "${F2FS_ROOT}"
-	tar xf "${F2FS_ROOT_TARBALL}"
-	popd
+	if [ ${PREPARTITIONED} -eq 0 ]; then
+		chattr -R +c "${F2FS_ROOT}"
+		pushd "${F2FS_ROOT}"
+		tar xf "${F2FS_ROOT_TARBALL}"
+		popd
+	else
+		TMPDIR=$(mktemp -d -p "${STAGING_TARBALL_DIR}")
+		pushd "${TMPDIR}"
+		tar xf "${F2FS_ROOT_TARBALL}"
+		rsync -aHAXvP --delete . "${F2FS_ROOT}"
+		popd
+		rm -rf "${TMPDIR}"
+	fi
 }
 
-function safe_format_disk() {
+function confirmation_prompt() {
 	DISK_NAME=`lsblk -d -o VENDOR,MODEL,SIZE -n ${DISK}`
 
 	echo "about to partition disk ${DISK}"
@@ -121,11 +132,6 @@ function safe_format_disk() {
 		echo "\"${confirmation}\" is not \"yes please\", aborting"
 		exit 1
 	fi
-
-	set -e
-	set -x
-
-	part_disk
 
 	return 0
 }
@@ -162,21 +168,29 @@ function do_flash() {
         fi
 
 	prepare_flash_state $@
-
-	safe_format_disk
+	confirmation_prompt
 
 	set -e
 	set -x
 
+	if [ ${PREPARTITIONED} -eq 0 ]; then
+		part_disk
+	fi
+
 	discover_drive_partitions
-	format_partitions
-	mount_f2fs_part
+	format_boot
+
+	if [ ${PREPARTITIONED} -eq 0 ]; then
+		format_root
+	fi
+
+	mount_root_part
 	setup_root_part
 	setup_fstab
-	mount_f2fs_devprocsys
+	mount_root_devprocsys
 	chroot_flashdrive
-	umount_f2fs_devprocsys
-	umount_f2fs_part
+	umount_root_devprocsys
+	umount_root_part
 }
 
 function do_syslinux_chrooted() {
@@ -210,6 +224,9 @@ function do_syslinux_chrooted() {
 }
 
 if [ "$1" == "flash" ]; then
+	do_flash "$2" "$3"
+elif [ "$1" == "flash_prepartitioned" ]; then
+	PREPARTITIONED=1
 	do_flash "$2" "$3"
 elif [ "$1" == "chrooted_set_syslinux" ]; then
 	do_syslinux_chrooted $2 $3 $4
