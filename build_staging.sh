@@ -64,7 +64,7 @@ function tar_staging_dir() {
 	TOTAR=$1
 	SUFFIX=$2
 	pushd "${TOTAR}"
-	tar cf "${WORK_DIR}"/staging-${SUFFIX}.tar ./
+	tar cJf "${WORK_DIR}"/staging-${SUFFIX}.tar.xz ./
 	popd
 }
 
@@ -72,12 +72,16 @@ function tar_unpack() {
 	TOTAR=$1
         SUFFIX=$2
         pushd "${TOTAR}"
-        tar xf "${WORK_DIR}"/staging-${SUFFIX}.tar
+        tar xf "${WORK_DIR}"/staging-${SUFFIX}.tar.xz
         popd
 }
 
 function rel_cleanup_staging() {
 	mv "${STAGING_ROOT}"/usr/src "${STAGING_KERNEL_SRC}"
+
+	rm -rf "${STAGING_ROOT}"/flashtoo/portage/logs
+	rm -rf "${STAGING_ROOT}"/flashtoo/portage/logs2
+	rm -rf "${STAGING_ROOT}"/flashtoo/portage/tmp/*
 	mv "${STAGING_ROOT}"/flashtoo "${STAGING_FLASHTOO_BIN}"
 	mv "${STAGING_ROOT}"/usr/portage "${STAGING_FLASHTOO_BIN}"/usr-portage
 

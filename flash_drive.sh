@@ -157,8 +157,8 @@ function prepare_flash_state() {
         # constants
         F2FS_ROOT="${DIR}"/f2fs_root
         SYSLINUX_SETUP_DIR="${F2FS_ROOT}"/flashtoo-syslinux-setup
-        STAGING_ROOT_TARBALL=staging-root-nobdeps.tar
-        STAGING_BOOT_TARBALL=staging-boot.tar
+        STAGING_ROOT_TARBALL=staging-root-nobdeps.tar.xz
+        STAGING_BOOT_TARBALL=staging-boot.tar.xz
 }
 
 function do_flash() {
@@ -216,7 +216,7 @@ function do_syslinux_chrooted() {
 	extlinux --device /dev/disk/by-partuuid/${FAT_BOOT_PARTUUID} --install /boot/extlinux
 	pushd /boot
 	# Do not use script var, we're in chroot:
-	tar xf "${DIR}"/staging-boot.tar
+	tar xf "${DIR}"/staging-boot.tar.xz
 	popd
 	sed -i "s/__FLASHTOO_PARTUUID__/${F2FS_ROOT_PARTUUID}/" /boot/extlinux/syslinux.cfg
 	sed -i "s/__FLASHTOO_PARTUUID__/${F2FS_ROOT_PARTUUID}/" /etc/kernel/postinst.d/10-flashtoo-syslinux.sh
