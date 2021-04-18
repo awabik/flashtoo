@@ -20,6 +20,12 @@ MANDATORY_KERNEL_BDEPS="\
 app-arch/cpio \
 "
 
+# net-libs/libgfbgraph needs gtk-doc,
+# which it does not pull in
+MANDATORY_BDEPS="\
+dev-util/gtk-doc \
+"
+
 function sync_portage() {
 	emerge-webrsync
 	emerge --sync
@@ -60,6 +66,7 @@ function clean_kernel() {
 }
 
 function rebuild_world_for_stage2() {
+	emerge -1 --noreplace ${MANDATORY_BDEPS}
 	emerge --emptytree @world ${MANDATORY_ADDITIONAL_PACKAGES} ${ADDITIONAL_PACKAGES}
 	emerge @preserved-rebuild
 	emerge --depclean

@@ -58,8 +58,6 @@ function post_install_setup_actions_custom_services() {
 	# Enable Xorg GDM greeter:
         systemctl enable gdm
         sed -i 's/#WaylandEnable=false/WaylandEnable=false/' /etc/gdm/custom.conf
-
-        systemctl enable NetworkManager
 }
 
 function post_install_setup_actions_systemd() {
@@ -80,6 +78,8 @@ function post_install_setup_actions_timezone_systemd() {
 }
 
 function post_install_setup_actions_networkmanager() {
+	systemctl enable NetworkManager
+
 	# Link /etc/resolv.conf to NetworkManager directory
         rm -f /etc/resolv.conf
         ln -s /run/NetworkManager/resolv.conf /etc/resolv.conf
