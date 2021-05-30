@@ -31,6 +31,7 @@ media-gfx/inkscape \
 media-video/celluloid \
 www-client/firefox \
 app-office/libreoffice \
+sys-firmware/b43-firmware \
 "
 
 TARGET_PROFILE="default/linux/amd64/17.1/desktop/gnome/systemd"
