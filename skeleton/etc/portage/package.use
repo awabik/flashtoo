@@ -9,3 +9,5 @@ sys-kernel/gentoo-kernel -initramfs
 media-libs/libvpx postproc
 x11-base/xorg-server xvfb
 media-video/mpv libmpv
+media-libs/freetype harfbuzz
+dev-libs/libgdata vala

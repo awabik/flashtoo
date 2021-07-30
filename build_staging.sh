@@ -46,6 +46,10 @@ function setup_staging() {
 function build_staging() {
 	mkdir -p /flashtoo/portage/tmp
 	emerge --usepkg --root="${STAGING_ROOT}" @system
+	# freetype = circular dep with harfbuzz
+	# help2man = circular dep through gettext
+	# automake - required for isl, emake bug
+	USE="-harfbuzz" emerge --usepkg --root="${STAGING_ROOT}" -1 freetype help2man automake
 }
 
 function chroot_rebuild_staging() {
